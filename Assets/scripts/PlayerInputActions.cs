@@ -49,14 +49,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
-                },
-                {
-                    ""name"": ""test"",
-                    ""type"": ""Button"",
-                    ""id"": ""e21c9de9-4590-43e2-814a-9997c7531798"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -304,12 +296,12 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""113f5b80-85e0-48f1-836b-025b4a410a5a"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""id"": ""7a1550d1-45b6-487c-8564-439609eb1e93"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Xbox;Gamepad"",
-                    ""action"": ""test"",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -902,7 +894,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-        m_Player_test = m_Player.FindAction("test", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -968,7 +959,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_test;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -977,7 +967,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputAction @test => m_Wrapper.m_Player_test;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -999,9 +988,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                @test.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTest;
-                @test.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTest;
-                @test.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTest;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -1018,9 +1004,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
-                @test.started += instance.OnTest;
-                @test.performed += instance.OnTest;
-                @test.canceled += instance.OnTest;
             }
         }
     }
@@ -1190,7 +1173,6 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
-        void OnTest(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

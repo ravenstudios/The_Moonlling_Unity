@@ -36,14 +36,6 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
-                },
-                {
-                    "name": "test",
-                    "type": "Button",
-                    "id": "e21c9de9-4590-43e2-814a-9997c7531798",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -291,12 +283,12 @@
                 },
                 {
                     "name": "",
-                    "id": "113f5b80-85e0-48f1-836b-025b4a410a5a",
-                    "path": "<Gamepad>/buttonEast",
+                    "id": "7a1550d1-45b6-487c-8564-439609eb1e93",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Xbox;Gamepad",
-                    "action": "test",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

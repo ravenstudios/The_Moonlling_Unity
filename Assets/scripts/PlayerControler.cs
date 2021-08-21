@@ -13,6 +13,7 @@ public class PlayerControler : MonoBehaviour
     [Header("POS")]
         public Vector2 pos;
         public Vector2 _leftStickVector;
+    public Vector2 velicoty;
 
 
     [Header("Movment")]
@@ -22,10 +23,10 @@ public class PlayerControler : MonoBehaviour
 
 
     [Header("Jump")]
-    public bool _isJumping = false;
+        public bool _isJumping = false;
         public float _jumpVel;
-        public float _jumpSpeed = 30f;
-        public float _maxJumpVel = 300f;
+        public float _jumpSpeed = 10;
+        public float _maxJumpVel = 20;
     
 
 
@@ -42,36 +43,52 @@ public class PlayerControler : MonoBehaviour
 
         rb = this.GetComponent<Rigidbody2D>();
 
+
+        _playerInputActions.Player.Jump.performed += ctx => StartJump();
+        _playerInputActions.Player.Jump.canceled += ctx => EndJump();
     }
 
-    private void Start()
+
+
+
+
+    private void OnEnable()
     {
-        _playerInputActions.Player.Jump.started += StartJump();
-        _playerInputActions.Player.Jump.canceled += EndJump();
+        _playerInputActions.Enable();
     }
 
-    
 
-    void StartJump()
+    private void OnDisable()
     {
-        _isJumping = true;
+        _playerInputActions.Disable();
     }
-
-
-    private Action<InputAction.CallbackContext> EndJump()
-    {
-        throw new NotImplementedException();
-    }
-
 
 
     private void Update()
     {
         ModifyPhysics();
+
+
+        //clamp max speed
+        if (Mathf.Abs(rb.velocity.y) > _maxJumpVel)
+        {
+            rb.velocity = new Vector2(rb.velocity.y, Mathf.Sign(rb.velocity.y) * _maxVel);
+            _isJumping = false;
+        }
+
+        if (_isJumping)
+        {
+
+            rb.velocity += Vector2.up * Physics2D.gravity.y * -_jumpSpeed * Time.deltaTime;
+        }
+        
     }
+
+
 
     private void FixedUpdate()
     {
+        velicoty = rb.velocity;
         pos = rb.position;
         Move();
 
@@ -96,10 +113,18 @@ public class PlayerControler : MonoBehaviour
     }
 
 
-    private void OnJump(InputValue movementValue)
+    public void StartJump()
     {
-        //_jumpVel = movementValue.Get<Axis>();
+        _isJumping = true;
+        Debug.Log("jump");
     }
+
+    public void EndJump()
+    {
+        _isJumping = false;
+        Debug.Log("stop jump");
+    }
+
 
 
 
@@ -131,39 +156,7 @@ public class PlayerControler : MonoBehaviour
             rb.drag = 0f;
         }
     }
-
-        //void Jump()
-        //{
-        //    rb.velocity = new Vector2(rb.velocity.x, 0);
-        //    rb.AddForce(Vector2.up * _jumpSpeed, ForceMode2D.Impulse);
-        //}
-    }
-    //private void OnJump()
-    //{
-    //    Jump();
-
-    //}
-
-    //Vector2 Jump()
-    //{
-    //    Debug.Log("j");
-    //    float x = 0;
-    //    float y = _jumpSpeed;
-    //    return new Vector2(x, y);
-
-    //    //var gamepad = Gamepad.current;
-    //    //if (gamepad == null)
-    //    //{
-    //    //    return;
-    //    //}
-
-    //    //if (gamepad.buttonSouth.isPressed)
-    //    //{
-    //    //    rb.AddForce(Jump());
-    //    //}
-
-
-    //}
-
+}
+    
 
 
