@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9040255375161594095}
   - component: {fileID: 1165054133749496756}
   - component: {fileID: 908688321710285730}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Layer1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,7 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1438560668837287481}
   - component: {fileID: 8218598364001238770}
-  m_Layer: 31
+  m_Layer: 3
   m_Name: TilePallet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,30 +11,40 @@ public class PlayerControler : MonoBehaviour
 
 
     [Header("POS")]
-        public Vector2 pos;
-        public Vector2 _leftStickVector;
+    public Vector2 pos;
+    public Vector2 _leftStickVector;
     public Vector2 velicoty;
 
 
     [Header("Movment")]
-        public float _speed = 10f;
-        public float _maxVel = 7;
-        public float _slideFriction = 4f;
+    public float _speed = 20f;
+    public float _maxVel = 10;
+    public float _slideFriction = 4f;
+    public float gravity = 1f;
+    public float fallMultiplier = 5f;
+
+
+    [Header("Components")]
+    public LayerMask _groundLayer;
+    public Rigidbody2D rb;
+
 
 
     [Header("Jump")]
-        public bool _isJumping = false;
-        public float _jumpVel;
-        public float _jumpSpeed = 10;
-        public float _maxJumpVel = 20;
+    public bool _isJumping = false;
+    public float _jumpSpeed = 2f;
+    public float _maxJumpVel = 8f;
+
+    [Header("Collision")]
+    public bool _onGround = false;
+    public float _rayCastLength = 0.6f;
+    public Vector3 _rayCastOffset;
+
+
+
+
+
     
-
-
-
-
-
-
-    Rigidbody2D rb;
     
 
     private void Awake()
@@ -43,7 +53,9 @@ public class PlayerControler : MonoBehaviour
 
         rb = this.GetComponent<Rigidbody2D>();
 
-
+        //adds the abilty to see when a button is pressed "performed"
+        //and released "canceled". ctx is the conext of the input used
+        //as an argument.
         _playerInputActions.Player.Jump.performed += ctx => StartJump();
         _playerInputActions.Player.Jump.canceled += ctx => EndJump();
     }
@@ -63,24 +75,22 @@ public class PlayerControler : MonoBehaviour
         _playerInputActions.Disable();
     }
 
+    void OnReset()
+    {
+        transform.position = new Vector2(0, 0);
+    }
 
     private void Update()
     {
         ModifyPhysics();
+        //draws a line from the object to the layer assigned 
+        _onGround =
+            Physics2D.Raycast(transform.position + _rayCastOffset, Vector2.down, _rayCastLength, _groundLayer)
+            ||
+            Physics2D.Raycast(transform.position - _rayCastOffset, Vector2.down, _rayCastLength, _groundLayer);
 
 
-        //clamp max speed
-        if (Mathf.Abs(rb.velocity.y) > _maxJumpVel)
-        {
-            rb.velocity = new Vector2(rb.velocity.y, Mathf.Sign(rb.velocity.y) * _maxVel);
-            _isJumping = false;
-        }
-
-        if (_isJumping)
-        {
-
-            rb.velocity += Vector2.up * Physics2D.gravity.y * -_jumpSpeed * Time.deltaTime;
-        }
+        
         
     }
 
@@ -92,18 +102,7 @@ public class PlayerControler : MonoBehaviour
         pos = rb.position;
         Move();
 
-        var gamepad = Gamepad.current;
-        if (gamepad == null)
-        {
-            return;
-        }
-
-        if (gamepad.buttonSouth.isPressed)
-        {
-            Vector2 jump = new Vector2(0, _jumpSpeed);
-            rb.AddForce(jump, ForceMode2D.Impulse);
-
-        }
+        
     }
 
 
@@ -113,18 +112,24 @@ public class PlayerControler : MonoBehaviour
     }
 
 
+
+
     public void StartJump()
     {
-        _isJumping = true;
-        Debug.Log("jump");
+        if (_onGround)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            _isJumping = true;
+            Jump();
+        }
     }
 
     public void EndJump()
     {
         _isJumping = false;
-        Debug.Log("stop jump");
     }
 
+    void Jump() => rb.AddForce(Vector2.up * _jumpSpeed, ForceMode2D.Impulse);
 
 
 
@@ -147,14 +152,54 @@ public class PlayerControler : MonoBehaviour
         //If input direction is opposite of veocity
         bool changingDirections = (_leftStickVector.x > 0 && rb.velocity.x < 0) || (_leftStickVector.x < 0 && rb.velocity.x > 0);
 
-        if (Mathf.Abs(_leftStickVector.x) < 0.4f || changingDirections)
+        if (_onGround)
         {
-            rb.drag = _slideFriction;
+            rb.gravityScale = 1;
+            if (Mathf.Abs(_leftStickVector.x) < 0.4f || changingDirections)
+            {
+                rb.drag = _slideFriction;
+            }
+            else
+            {
+                rb.drag = 0f;
+            }
         }
+
         else
         {
-            rb.drag = 0f;
+            rb.gravityScale = gravity;
+            rb.drag = _slideFriction * 0.15f;
+            if (rb.velocity.y < 0)
+            {
+                rb.gravityScale = gravity * fallMultiplier;
+            }
+            else if (rb.velocity.y > 0 && !_isJumping)
+            {
+                rb.gravityScale = gravity * (fallMultiplier / 2);
+            }
         }
+
+        //if (_isJumping)
+        //{
+        //    Jump();
+        //}
+
+        if (rb.velocity.y > _maxJumpVel)
+        {
+
+            _isJumping = false;
+        }
+
+
+    }
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position + _rayCastOffset, transform.position + _rayCastOffset + Vector3.down * _rayCastLength);
+        Gizmos.DrawLine(transform.position - _rayCastOffset, transform.position - _rayCastOffset + Vector3.down * _rayCastLength);
+
     }
 }
     
