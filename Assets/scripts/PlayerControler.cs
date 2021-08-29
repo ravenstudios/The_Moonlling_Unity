@@ -32,8 +32,8 @@ public class PlayerControler : MonoBehaviour
 
     [Header("Jump")]
     public bool _isJumping = false;
-    public float _jumpSpeed = 2f;
-    public float _maxJumpVel = 8f;
+    public float _jumpSpeed = 10f;
+    public float _maxJumpVel = 50f;
 
     [Header("Collision")]
     public bool _onGround = false;
